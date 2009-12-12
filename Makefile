@@ -16,7 +16,7 @@ endif
 	@mkdir -p $(MAKE_DIRS)
 
 tarball:
-	cd .. ; tar -p -c -v -z --exclude ".svn" --exclude $(NAME).tar.gz -f  /tmp/$(NAME).tar.gz $(NAME)
+	cd .. ; tar -p -c -v -z --exclude ".svn" --exclude ".git" --exclude $(NAME).tar.gz -f  /tmp/$(NAME).tar.gz $(NAME)
 	@mv -f /tmp/$(NAME).tar.gz .
 
 ## use this to build an srpm locally
@@ -27,7 +27,7 @@ srpm:  rpmcheck
 	@rm -rf BUILD SRPMS RPMS
 
 ## use this to build rpm locally
-rpm:   rpmcheck
+rpm:   rpmcheck 
 	@wait
 	$(RPMBUILD) $(RPM_DEFINES) -bb  $(SPEC_FILE)
 	@mv -f RPMS/noarch/* .

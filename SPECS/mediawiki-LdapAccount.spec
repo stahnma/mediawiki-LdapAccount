@@ -5,9 +5,9 @@ Release:        1%{?dist}
 Summary:        Use LDAP as account source for medaiwiki
 
 Group:          Development/Tools
-License:        WTFPLv2 
+License:        WTFPL
 URL:            http://github.com/stahnma/mediawiki-%{extname}
-Source0:        http://github.com/stahnma/mediawiki-%{extname}/
+Source0:        %{extname}.php
 Source1:        README.%{extname}
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildArch:      noarch
@@ -17,6 +17,8 @@ Requires:       mediawiki >= 1.13, php-ldap
 %description
 Restrict mediawiki to using LDAP accounts only, creates account based on 
 LDAP information and authenticates using LDAP.
+
+%setup -q 
 
 %prep
 cp -p -f %{SOURCE1} ./README
