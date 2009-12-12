@@ -1,14 +1,56 @@
-/**
- * Usage: Edit LocalSettings.php and add the following variables
- * require_once 'extensions/ldapaccount.php';
- * $wgDS = Directory Server with protocol (e.g. ldaps://ldap.example.com)
- * $wgBindType = (Anonymous or ProxyAccount)
- * $wgBindProxyDN = "uid=userid,ou=people,dc=example,dc=com"
- * $wgBindProxyPW = "apassword"
- * $wgDSPort = 389 or 636 (defaults to 389)
- * $wgBaseDN = "dc=example,dc=com"
- *
- *
- *
- **/
+(c) 2009 Michael Stahnke <stahnma@websages.com>
+
+http://github.com/stahnma/mediawiki-ldapaccount
+
+This extension allows you to use LDAP backed accounts inside mediawiki.  I found a few that sort of 
+did what I wanted, but nothing that fit 100% of my requirements, so I wrote my own extension. 
+
+== Features == 
+  * Account must exist in LDAP
+  * Accounts are created inside mediawiki with attributes populated from LDAP
+  * You can still allow non-users to read contents (as opposed to using web server LDAP authentication)
+  * Authenticates against LDAP
+  * Changing password in mediawiki is disabled
+
+== Requirements ==
+  * Needs php ldap libraries installed (php-ldap package on RHEL/Centos/Fedora)
+  
+== Testing ==
+  * Tested only against OpenLDAP with SSL enabled. I don't have lots of directories lying around.
+  * If you find bugs against other LDAP servers, let me know and I will try to help.
+  * I am not really interested in this working for ActiveDirectory, but I think it would.
+  
+== Configuration ==
+
+  Usage: Edit LocalSettings.php and add the following variables
+
+
+  require_once 'extensions/LdapAccount/LdapAccount.php';
+  # Description: Directory Server URI with protocol (not port)
+  # Default: None
+  $wgDS = "ldaps:#ldap.example.com";
+
+  # Description: Directory Server Port
+  # Default: 389
+  $wgDSPort = 389;
+
+  # Description: Bind Type (Anonymous or ProxyAccount)
+  # Default: Anonymous
+  $wgBindType = "Anonymous";
+
+  # Description: Proxy Bind Account DN
+  # Default: None
+  $wgBindProxyDN = "uid=userid,ou=people,dc=example,dc=com";
+
+  # Description: Proxy Bind Account Password
+  # Default: None
+  $wgBindProxyPW = "apassword";
+
+  # Description: LDAP Attribute to search on
+  # Default: uid
+  $wgUserAttr = "uid";
+
+  # Description: LDAP Search Base for looking up accounts
+  # Default: None
+  $wgLDAPSearchBase="ou=people,dc=example,dc=com";
 

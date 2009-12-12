@@ -18,95 +18,134 @@
 
 
 /** 
- * Usage: Edit LocalSettings.php and add the following variables
- * require_once 'extensions/LdapAccountPlugin.php';
- * $wgDS = Directory Server with protocol (e.g. ldaps://ldap.example.com)
- * $wgBindType = (Anonymous or ProxyAccount)
- * $wgBindProxyDN = "uid=userid,ou=people,dc=example,dc=com"
- * $wgBindProxyPW = "apassword"
- * $wgDSPort = 389 or 636 (defaults to 389)
- * $wgBaseDN = "dc=example,dc=com"
- * 
- * 
- * 
+  Usage: Edit LocalSettings.php and add the following variables
+  require_once 'extensions/LdapAccount/LdapAccount.php';
+  # Description: Directory Server URI with protocol (not port)
+  # Default: None
+  $wgDS = "ldaps:#ldap.example.com";
+
+  # Description: Directory Server Port
+  # Default: 389
+  $wgDSPort = 389;
+
+  # Description: Bind Type (Anonymous or ProxyAccount)
+  # Default: Anonymous
+  $wgBindType = "Anonymous"; 
+
+  # Description: Proxy Bind Account DN
+  # Default: None
+  $wgBindProxyDN = "uid=userid,ou=people,dc=example,dc=com";
+
+  # Description: Proxy Bind Account Password
+  # Default: None
+  $wgBindProxyPW = "apassword";
+
+  # Description: LDAP Attribute to search on 
+  # Default: uid
+  $wgUserAttr = "uid";
+
+  # Description: LDAP Search Base for looking up accounts
+  # Default: None
+  $wgLDAPSearchBase="ou=people,dc=example,dc=com";
  **/
 
 
 require_once("AuthPlugin.php"); 
 
-class LdapAccountPlugin extends AuthPlugin
-{
-  function userExists( $username )
-  {
-    $userFoundInLdap = false;
-    $ds = 'ldaps://odin.websages.com';
-    $ldap_conn = ldap_connect($ds, 636);
-    if (isset($ldap_conn) and $ldap_conn)
-    {
+class LdapAccount extends AuthPlugin {
+ 
+  function setLDAPVars() {
+    global $wgDSPort;
+    global $wgDSPort;
+    global $wgBindType;
+    global $wgLDAPSearchBase;
+    global $wgLDAPUserAttr;
+    if (! isset($wgDSPort))
+      $wgDSPort = 389;
+    if (! isset($wgBindType)) 
+      $wgBindType = "Anonymous";
+    if (! isset($wgLDAPSearchBase))
+      $wgLDAPSearchBase="ou=people,dc=example,dc=com";
+    if (! isset($wgLDAPUserAttr)) 
+      $wgLDAPUserAttr = "uid";
+  }
+
+  function dsConnect() {
+    $this->setLDAPVars();
+    global $wgDS;
+    global $wgDSPort;
+    global $wgBindType;
+    global $wgBindProxyDN;
+    global $wgBindProxyPW;
+    $ldap_conn = ldap_connect($wgDS, $wgDSPort);
+    if (isset($ldap_conn) and $ldap_conn) {  
       ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
       ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
-      ldap_bind($ldap_conn, 'cn=LDAP Anonymous,ou=Special,dc=websages,dc=com', '8de47d5aa7d61e92c577d8156b966583f6d7d75d714a3b99fca4fb2f8bfe97c6');
-      $results = ldap_search(
-          $ldap_conn,
-          "OU=people,dc=websages,dc=com",
-          "uid=$username");
-      $info = ldap_get_entries($ldap_conn,$results);
-      if ($info["count"] > 0)
-      {
-        $userFoundInLdap = true;
+      if(isset($wgBindType) and ($wgBindType === "Proxy") ) {
+        if (ldap_bind($ldap_conn, $wgBindProxyDN, $wgBindProxyPW))
+          return $ldap_conn;
+        else 
+          return false;
       }
-      ldap_close($ldap_conn);
+      else {
+        if (ldap_bind($ldap_conn))
+          return $ldap_conn;
+        else 
+          return false;
+      }
     }
-    return $userFoundInLdap;
-  }   
+    return false;
+  }
 
-  function authenticate( $username, $password )
-  {
-    /* need ldap authentication here */ 
-    
-    if (isset($ldap_conn) and ldap_bind($ldap_conn, "uid=$username,ou=People,dc=websages,dc=com", $password))
-    {
+  function userExists( $username ) {
+    $this->setLDAPVars();
+    global $wgLDAPSearchBase;
+    global $wgLDAPUserAttr;
+    $ldap_conn = $this->dsConnect();
+    $results = @ldap_search( $ldap_conn, $wgLDAPSearchBase, "$wgLDAPUserAttr=$username");
+    $info = @ldap_get_entries($ldap_conn,$results);
+    ldap_close($ldap_conn);
+    if ($info["count"] > 0)
       return true;
-    }
     else
-    {
       return false;
-    }
   }   
 
-  function autoCreate()
-  {
+  function initUser( &$user ) {
+    setLDAPVars();
+    global $wgLDAPSearchBase;
+    global $wgLDAPUserAttr;
+    $ldap_conn = dsConnect();
+    $userId = $user->getName();
+    $results = ldap_search($ldap_conn, $wgLDAPSearchBase, "$wgLDAPUserAttr=$userId");
+    $info = ldap_get_entries($ldap_conn,$results);
+    if ($info["count"] > 0) {
+      $entry = $info[0];
+      $user->setRealName($entry["name"][0]);
+      $user->setEmail($entry["mail"][0]);
+    }
+    ldap_close($ldap_conn);
+  }
+
+  function authenticate( $username, $password ) {
+    global $wgLDAPSearchBase;
+    global $wgLDAPUserAttr;
+    if (isset($ldap_conn) and ldap_bind($ldap_conn, "$wgLDAPUserAttr=$username,$wgLDAPSearchBase", $password))
+      return true;
+    else
+      return false;
+  }   
+
+  function autoCreate() {
     return true;
   }   
 
-  function strict()
-  {
+  function strict() {
     return false;
   }   
-
-  function initUser( &$user )
-  {
-    $ds = 'ldaps://odin.websages.com';
-    $ldap_conn = ldap_connect($ds, 636);
-    if (isset($ldap_conn) and $ldap_conn)
-    {
-      ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
-      ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
-      ldap_bind($ldap_conn,
-                'cn=LDAP Anonymous,ou=Special,dc=websages,dc=com',
-                '8de47d5aa7d61e92c577d8156b966583f6d7d75d714a3b99fca4fb2f8bfe97c6');
-      $userId = $user->getName();
-      $results = ldap_search($ldap_conn, "OU=people,dc=websages,dc=com", "uid=$userId");
-      $info = ldap_get_entries($ldap_conn,$results);
-      if ($info["count"] > 0)
-      {
-        $entry = $info[0];
-        $user->setRealName($entry["name"][0]);
-        $user->setEmail($entry["mail"][0]);
-      }
-      ldap_close($ldap_conn);
-    }
+  
+  function allowPasswordChange() {
+    return false;
   }
 }   
-
 ?>
