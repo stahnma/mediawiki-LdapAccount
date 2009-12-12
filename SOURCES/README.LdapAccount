@@ -14,6 +14,11 @@ did what I wanted, but nothing that fit 100% of my requirements, so I wrote my o
 
 == Requirements ==
   * Needs php ldap libraries installed (php-ldap package on RHEL/Centos/Fedora)
+
+== Packaging ==
+  * Want a source rpm?  make srpm
+  * Want a binary noarch rpm? make rpm
+  * Want a deb?  so do i. 
   
 == Testing ==
   * Tested only against OpenLDAP with SSL enabled. I don't have lots of directories lying around.
