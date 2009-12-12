@@ -50,7 +50,6 @@
  **/
 
 $wgGroupPermissions['*']['createaccount']   = false;
-$wgGroupPermissions['*']['read']            = false;
 $wgGroupPermissions['*']['edit']            = false;
 
 
