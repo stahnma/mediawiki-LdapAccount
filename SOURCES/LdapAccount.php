@@ -22,7 +22,7 @@
   require_once 'extensions/LdapAccount/LdapAccount.php';
   # Description: Directory Server URI with protocol (not port)
   # Default: None
-  $wgDS = "ldaps:#ldap.example.com";
+  $wgDS = "ldaps://ldap.example.com";
 
   # Description: Directory Server Port
   # Default: 389
@@ -49,6 +49,10 @@
   $wgLDAPSearchBase="ou=people,dc=example,dc=com";
  **/
 
+$wgGroupPermissions['*']['createaccount']   = false;
+$wgGroupPermissions['*']['read']            = false;
+$wgGroupPermissions['*']['edit']            = false;
+
 
 require_once("AuthPlugin.php"); 
 
@@ -70,7 +74,7 @@ class LdapAccount extends AuthPlugin {
       $wgLDAPUserAttr = "uid";
   }
 
-  function dsConnect() {
+  function dsConnect($bind = "yes") {
     $this->setLDAPVars();
     global $wgDS;
     global $wgDSPort;
@@ -81,6 +85,8 @@ class LdapAccount extends AuthPlugin {
     if (isset($ldap_conn) and $ldap_conn) {  
       ldap_set_option($ldap_conn, LDAP_OPT_PROTOCOL_VERSION, 3);
       ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
+      if($bind == "no") 
+         return $ldap_conn;
       if(isset($wgBindType) and ($wgBindType === "Proxy") ) {
         if (ldap_bind($ldap_conn, $wgBindProxyDN, $wgBindProxyPW))
           return $ldap_conn;
@@ -111,7 +117,7 @@ class LdapAccount extends AuthPlugin {
       return false;
   }   
 
-  function initUser( &$user ) {
+   function initUser( &$user ) {
     $this->setLDAPVars();
     global $wgLDAPSearchBase;
     global $wgLDAPUserAttr;
@@ -128,6 +134,7 @@ class LdapAccount extends AuthPlugin {
   }
 
   function authenticate( $username, $password ) {
+    $ldap_conn = $this->dsConnect("no");
     global $wgLDAPSearchBase;
     global $wgLDAPUserAttr;
     if (isset($ldap_conn) and ldap_bind($ldap_conn, "$wgLDAPUserAttr=$username,$wgLDAPSearchBase", $password))
@@ -141,17 +148,15 @@ class LdapAccount extends AuthPlugin {
   }   
 
   function strict() {
-    return false;
+    return true;
   }   
   
   function allowPasswordChange() {
     return false;
   }
 
-   function addUser($user, $password) {
+  function setPassword($user, $password) {
     return false;
   }
- 
-  
 }   
 ?>
