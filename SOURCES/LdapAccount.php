@@ -112,10 +112,10 @@ class LdapAccount extends AuthPlugin {
   }   
 
   function initUser( &$user ) {
-    setLDAPVars();
+    $this->setLDAPVars();
     global $wgLDAPSearchBase;
     global $wgLDAPUserAttr;
-    $ldap_conn = dsConnect();
+    $ldap_conn = $this->dsConnect();
     $userId = $user->getName();
     $results = ldap_search($ldap_conn, $wgLDAPSearchBase, "$wgLDAPUserAttr=$userId");
     $info = ldap_get_entries($ldap_conn,$results);
@@ -147,5 +147,11 @@ class LdapAccount extends AuthPlugin {
   function allowPasswordChange() {
     return false;
   }
+
+   function addUser($user, $password) {
+    return false;
+  }
+ 
+  
 }   
 ?>
