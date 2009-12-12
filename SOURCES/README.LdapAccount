@@ -11,6 +11,10 @@ did what I wanted, but nothing that fit 100% of my requirements, so I wrote my o
   * You can still allow non-users to read contents (as opposed to using web server LDAP authentication)
   * Authenticates against LDAP
   * Changing password in mediawiki is disabled
+  * Users cannot register without an account in LDAP
+
+== Recommendations ==
+ * I recommend you disable anonymous edits (with this extension you can prevent spam this way)
 
 == Requirements ==
   * Needs php ldap libraries installed (php-ldap package on RHEL/Centos/Fedora)
