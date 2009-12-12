@@ -1,0 +1,14 @@
+/**
+ * Usage: Edit LocalSettings.php and add the following variables
+ * require_once 'extensions/ldapaccount.php';
+ * $wgDS = Directory Server with protocol (e.g. ldaps://ldap.example.com)
+ * $wgBindType = (Anonymous or ProxyAccount)
+ * $wgBindProxyDN = "uid=userid,ou=people,dc=example,dc=com"
+ * $wgBindProxyPW = "apassword"
+ * $wgDSPort = 389 or 636 (defaults to 389)
+ * $wgBaseDN = "dc=example,dc=com"
+ *
+ *
+ *
+ **/
+
