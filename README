@@ -1,37 +1,39 @@
 (c) 2009 Michael Stahnke <stahnma@websages.com>
 
-http://github.com/stahnma/mediawiki-ldapaccount
+http://github.com/stahnma/mediawiki-LdapAccount
 
 This extension allows you to use LDAP backed accounts inside mediawiki.  I found a few that sort of 
 did what I wanted, but nothing that fit 100% of my requirements, so I wrote my own extension. 
 
 == Features == 
-  * Account must exist in LDAP
-  * Accounts are created inside mediawiki with attributes populated from LDAP
-  * You can still allow non-users to read contents (as opposed to using web server LDAP authentication)
-  * Authenticates against LDAP
-  * Changing password in mediawiki is disabled
-  * Users cannot register without an account in LDAP
-
-== Recommendations ==
- * I recommend you disable anonymous edits (with this extension you can prevent spam this way)
+* Account must exist in LDAP
+* Accounts are created inside mediawiki with attributes populated from LDAP
+* You can still allow non-users to read contents (as opposed to using web server LDAP authentication)
+* Authenticates against LDAP
+* Changing password in mediawiki is disabled
+* Disable anonymous edits and account registration (prevents spam)
 
 == Requirements ==
-  * Needs php ldap libraries installed (php-ldap package on RHEL/Centos/Fedora)
+* Needs php ldap libraries installed (php-ldap package on RHEL/Centos/Fedora)
 
 == Packaging ==
-  * Want a source rpm?  make srpm
-  * Want a binary noarch rpm? make rpm
-  * Want a deb?  so do i. 
+* Want a source rpm?  make srpm
+* Want a binary noarch rpm? make rpm
+* Want a deb?  so do i. 
   
 == Testing ==
-  * Tested only against OpenLDAP with SSL enabled. I don't have lots of directories lying around.
-  * If you find bugs against other LDAP servers, let me know and I will try to help.
-  * I am not really interested in this working for ActiveDirectory, but I think it would.
+* Tested only against OpenLDAP with SSL enabled. I don't have lots of directories lying around.
+* If you find bugs against other LDAP servers, let me know and I will try to help.
+* I am not really interested in this working for ActiveDirectory, but I think it would.
+
+== Setup  ==
+* IF you're using SSL you might want a .ldaprc file in Apache's home directory that specifies SSL Cert path, tells 
+     the web server not to care about SSL certificate signing errors.  
+* You'll need to edit LocalSettings.php (see below)
   
 == Configuration ==
 
-  Usage: Edit LocalSettings.php and add the following variables
+Usage: Edit LocalSettings.php and add the following variables
 
 
   require_once 'extensions/LdapAccount/LdapAccount.php';
@@ -65,18 +67,18 @@ did what I wanted, but nothing that fit 100% of my requirements, so I wrote my o
 
 
 == License == 
-/**
- *  DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
- *                  Version 2, December 2004
- *
- * Copyright (C) 2004 Sam Hocevar
- * 14 rue de Plaisance, 75014 Paris, France
- * Everyone is permitted to copy and distribute verbatim or modified
- * copies of this license document, and changing it is allowed as long
- * as the name is changed.
- * 
- *         DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
- *  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
- * 
- * 0. You just DO WHAT THE FUCK YOU WANT TO.
-**/
+ /**
+  *  DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  *                  Version 2, December 2004
+  *
+  * Copyright (C) 2004 Sam Hocevar
+  * 14 rue de Plaisance, 75014 Paris, France
+  * Everyone is permitted to copy and distribute verbatim or modified
+  * copies of this license document, and changing it is allowed as long
+  * as the name is changed.
+  * 
+  *         DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
+  *  TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
+  * 
+  * 0. You just DO WHAT THE FUCK YOU WANT TO.
+ **/
