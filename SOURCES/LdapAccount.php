@@ -52,6 +52,16 @@
 $wgGroupPermissions['*']['createaccount']   = false;
 $wgGroupPermissions['*']['edit']            = false;
 
+$wgExtensionCredits['other'][] = array(
+        'name' => 'LdapAccount',
+        'version' => '0.1',
+        'author' => array('Michael Stahnke'),
+        'url' => 'http://github.com/stahnma/mediawiki-LdapAccount',
+        'description' => 'Restrict mediawiki to using LDAP accounts only, creates account based on
+LDAP information and authenticates using LDAP.'
+);
+
+
 
 require_once("AuthPlugin.php"); 
 
