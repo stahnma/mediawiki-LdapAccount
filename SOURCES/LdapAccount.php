@@ -86,7 +86,7 @@ class LdapAccount extends AuthPlugin {
       ldap_set_option($ldap_conn, LDAP_OPT_REFERRALS, 0);
       if($bind == "no") 
          return $ldap_conn;
-      if(isset($wgBindType) and ($wgBindType === "Proxy") ) {
+      if(isset($wgBindType) and ($wgBindType == "ProxyAccount") ) {
         if (ldap_bind($ldap_conn, $wgBindProxyDN, $wgBindProxyPW))
           return $ldap_conn;
         else 
