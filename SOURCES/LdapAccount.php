@@ -126,7 +126,7 @@ class LdapAccount extends AuthPlugin {
     $info = ldap_get_entries($ldap_conn,$results);
     if ($info["count"] > 0) {
       $entry = $info[0];
-      $user->setRealName($entry["name"][0]);
+      @ $user->setRealName($entry["name"][0]);
       $user->setEmail($entry["mail"][0]);
     }
     ldap_close($ldap_conn);
