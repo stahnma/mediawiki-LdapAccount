@@ -7,7 +7,13 @@ RPM_DEFINES =   --define "_specdir $(shell pwd)/SPECS" --define "_rpmdir $(shell
 
 MAKE_DIRS= $(shell pwd)/SPECS $(shell pwd)/SOURCES $(shell pwd)/BUILD $(shell pwd)/SRPMS $(shell pwd)/RPMS
 
-.PHONEY: listing listing spec uninstall
+VERSION=$(shell cat SPECS/version)
+PKGDIR=$(NAME)-$(VERSION)
+TARBALL=$(PKGDIR).tar.gz
+EXCLUDES=--exclude ".svn" --exclude ".git" --exclude ".gitignore" --exclude "$(TARBALL)" --exclude "*rpm"
+
+
+.PHONEY: clean tarball
 
 rpmcheck:
 ifeq ($(RPMBUILD),x)
@@ -16,8 +22,10 @@ endif
 	@mkdir -p $(MAKE_DIRS)
 
 tarball:
-	cd .. ; tar -p -c -v -z --exclude ".svn" --exclude ".git" --exclude $(NAME).tar.gz -f  /tmp/$(NAME).tar.gz $(NAME)
-	@mv -f /tmp/$(NAME).tar.gz .
+	cd .. ; ln -sf $(NAME) $(PKGDIR); 
+	cd ..; tar -p -c -v -z -h $(EXCLUDES) -f  /tmp/$(TARBALL) $(PKGDIR)
+	@mv -f /tmp/$(TARBALL) .
+	@rm -f ../$(PKGDIR)
 
 ## use this to build an srpm locally
 srpm:  rpmcheck
