@@ -39,7 +39,7 @@ Usage: Edit LocalSettings.php and add the following variables
   require_once 'extensions/LdapAccount/LdapAccount.php';
   # Description: Directory Server URI with protocol (not port)
   # Default: None
-  $wgDS = "ldaps:#ldap.example.com";
+  $wgDS = "ldaps://ldap.example.com";
 
   # Description: Directory Server Port
   # Default: 389
@@ -65,6 +65,8 @@ Usage: Edit LocalSettings.php and add the following variables
   # Default: None
   $wgLDAPSearchBase="ou=people,dc=example,dc=com";
 
+  # Instantiate AuthPlugin object
+  $wgAuth = new LdapAccount();
 
 == License == 
  /**
